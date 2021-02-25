@@ -141,6 +141,64 @@ view: order_items {
     drill_fields: [detail*]
   }
 
+  measure: total_gross_margin_percentage {
+    type: number
+    value_format_name: percent_2
+    sql: 1.0 * ${total_gross_margin}/ NULLIF(${total_sale_price},0) ;;
+  }
+
+
+  # ----- Returns ------
+
+  dimension: is_returned {
+    type: yesno
+    sql: ${returned_raw} IS NOT NULL ;;
+  }
+
+  measure: returned_count{
+    type: count_distinct
+    sql: ${id} ;;
+    filters: {
+      field: is_returned
+      value: "yes"
+    }
+    drill_fields: [detail*]
+  }
+
+  measure: return_rate{
+    type: number
+    value_format_name: percent_2
+    sql: 1.0 * ${returned_count}/ NULLIF(${count},0) ;;
+  }
+
+  measure: no_customers_returning {
+    type: count_distinct
+    sql: ${user_id} ;;
+
+    filters: {
+      field: is_returned
+      value: "yes"
+    }
+  }
+
+  measure: no_customers {
+    type: count_distinct
+    sql: ${user_id} ;;
+  }
+
+  measure: users_with_returns_percentage {
+    type: number
+    value_format_name: percent_2
+    sql: 1.0 * ${no_customers_returning}/ NULLIF(${users.count},0) ;;
+  }
+
+  measure: average_spend_per_customer {
+    type: number
+    value_format_name: usd
+    sql: 1.0 * ${total_sale_price}/ NULLIF(${users.count},0) ;;
+  }
+
+
   # ----- Sets of fields for drilling ------
   set: detail {
     fields: [
