@@ -38,9 +38,10 @@ explore: inventory_items {
 
 explore: order_items {
   join: inventory_items {
-    type: left_outer
-    sql_on: ${order_items.inventory_item_id} = ${inventory_items.id} ;;
-    relationship: many_to_one
+    #Left Join only brings in items that have been sold as order_item
+    type: full_outer
+    relationship: one_to_one
+    sql_on: ${inventory_items.id} = ${order_items.inventory_item_id} ;;
   }
 
   join: users {
