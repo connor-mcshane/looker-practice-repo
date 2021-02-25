@@ -97,16 +97,48 @@ view: order_items {
     drill_fields: [detail*]
   }
 
+  # ----- Financials ------
   measure: total_sale_price
   {
     type: sum
-    filters: [status: "Complete"]
+    value_format_name: usd
+    sql: ${sale_price} ;;
+    drill_fields: [detail*]
   }
 
   measure: avg_sale_price
   {
     type: average
-    filters: [status: "Complete"]
+    value_format_name: usd
+    sql: ${sale_price} ;;
+    drill_fields: [detail*]
+  }
+
+  measure: running_total_sales
+  {
+    type: running_total
+    sql: ${sale_price} ;;
+    drill_fields: [detail*]
+  }
+
+  dimension: gross_margin {
+    type: number
+    value_format_name: usd
+    sql: ${sale_price} - ${inventory_items.cost} ;;
+  }
+
+  measure: total_gross_margin {
+    type: sum
+    value_format_name: usd
+    sql: ${gross_margin} ;;
+    drill_fields: [detail*]
+  }
+
+  measure: average_gross_margin {
+    type: average
+    value_format_name: usd
+    sql: ${gross_margin} ;;
+    drill_fields: [detail*]
   }
 
   # ----- Sets of fields for drilling ------
